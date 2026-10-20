@@ -7,6 +7,9 @@
 > **Amended (2026-10-14) by [ADR-0035](0035-single-lean-prod-and-github-actions.md).** One environment,
 > `prod`, at the smallest sizes; images in private GitHub Container Registry instead of Azure
 > Container Registry; CI/CD in GitHub Actions.
+>
+> **Amended (2026-10-20) by [ADR-0037](0037-warm-apps-and-a-custom-domain.md).** Prod keeps one
+> replica of each app running instead of scaling to zero.
 
 ## Context
 

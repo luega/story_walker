@@ -27,11 +27,21 @@ image_model = {
 postgres_location = "northeurope"
 
 # A handful of users: one replica each is enough, and caps what an unexpected burst can cost.
+# Both stay running when idle, so no visit waits for a cold start (ADR-0037).
+api_min_replicas = 1
 api_max_replicas = 1
+ui_min_replicas  = 1
 ui_max_replicas  = 1
 
-# In the subscription's billing currency, which is SEK: about $20 a month.
-monthly_budget = 200
+# The custom domain (ADR-0037), DNS at Hostinger. The certificate name is the one the portal gave it.
+ui_custom_domains = {
+  "storywalker.life"     = "storywalker.life-cae-stor-261020141619"
+  "www.storywalker.life" = "www.storywalker.life"
+}
+
+# In the subscription's billing currency, which is SEK: about $40 a month, room for two replicas
+# that never stop (ADR-0037).
+monthly_budget = 400
 
 # 0.15 GB a day stays inside the 5 GB a month Log Analytics ingests for free (ADR-0035).
 log_daily_quota_gb = 0.15

@@ -154,6 +154,28 @@ variable "ghcr_pull_token" {
   sensitive   = true
 }
 
+variable "api_min_replicas" {
+  description = "API replicas kept running when idle. 0 scales to zero, at the price of a cold start (ADR-0037)."
+  type        = number
+  default     = 0
+
+  validation {
+    condition     = var.api_min_replicas >= 0 && var.api_min_replicas <= var.api_max_replicas
+    error_message = "api_min_replicas must be between 0 and api_max_replicas."
+  }
+}
+
+variable "ui_min_replicas" {
+  description = "UI replicas kept running when idle. 0 scales to zero, at the price of a cold start (ADR-0037)."
+  type        = number
+  default     = 0
+
+  validation {
+    condition     = var.ui_min_replicas >= 0 && var.ui_min_replicas <= var.ui_max_replicas
+    error_message = "ui_min_replicas must be between 0 and ui_max_replicas."
+  }
+}
+
 variable "api_max_replicas" {
   description = "Upper bound on API replicas."
   type        = number
@@ -184,8 +206,14 @@ variable "clerk_secret_key" {
   sensitive   = true
 }
 
+variable "ui_custom_domains" {
+  description = "The UI's own hostnames, each mapped to the name of its Azure-managed certificate. Each is bound to the UI and trusted by the API (ADR-0037). Its DNS records must exist before the apply that adds it."
+  type        = map(string)
+  default     = {}
+}
+
 variable "extra_authorized_parties" {
-  description = "Origins allowed to obtain tokens for the API besides the UI's own Container Apps origin, e.g. a custom domain."
+  description = "Origins allowed to obtain tokens for the API besides the UI's own origins (its Container Apps address and ui_custom_domains)."
   type        = list(string)
   default     = []
 }

@@ -3,8 +3,13 @@ output "resource_group_name" {
 }
 
 output "ui_url" {
-  description = "Where the app is served. The API already trusts tokens from it (Clerk__AuthorizedParties)."
-  value       = local.ui_origin
+  description = "Where the app is served: its first custom domain, or its Container Apps address. The API already trusts tokens from it (Clerk__AuthorizedParties)."
+  value       = length(var.ui_custom_domains) > 0 ? "https://${keys(var.ui_custom_domains)[0]}" : local.ui_origin
+}
+
+output "custom_domain_verification_id" {
+  description = "The value of the asuid.<hostname> TXT record each custom domain needs at the registrar."
+  value       = azurerm_container_app_environment.main.custom_domain_verification_id
 }
 
 output "function_app_name" {
