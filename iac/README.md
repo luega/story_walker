@@ -91,9 +91,9 @@ An app registration that trusts only this repository's `prod` environment:
 app_id=$(az ad app create --display-name storywalker-github-deploy --query appId -o tsv)
 sp_id=$(az ad sp create --id "$app_id" --query id -o tsv)
 az ad app federated-credential create --id "$app_id" --parameters '{
-  "name": "github-prod",
+  "name": "github-prod-ids",
   "issuer": "https://token.actions.githubusercontent.com",
-  "subject": "repo:Luega/story_walker:environment:prod",
+  "subject": "repo:luega@90217066/story_walker@1264430914:environment:prod",
   "audiences": ["api://AzureADTokenExchange"]
 }'
 az role assignment create --assignee-object-id "$sp_id" --assignee-principal-type ServicePrincipal \
@@ -104,6 +104,13 @@ az role assignment create --assignee-object-id "$sp_id" --assignee-principal-typ
   --role "Storage Blob Data Contributor" \
   --scope "$(az storage account show -n <tfstate-account> --query id -o tsv)"
 ```
+
+The subject carries the owner's and the repository's numeric ids next to their names, so a renamed
+or re-created repository under the same name is not trusted. GitHub has issued this immutable form
+since July 2026 to repositories created, renamed or transferred after the change; this one switched
+in October 2026, and a credential with the name-only subject (`repo:Luega/story_walker:...`) no
+longer matches. The ids are `owner.id` and `id` in `https://api.github.com/repos/luega/story_walker`;
+when a login fails with `AADSTS700213`, the deploy log prints the subject GitHub presented.
 
 Contributor sits on the subscription because the provider checks resource provider registrations
 there. Role Based Access Control Administrator is there because the apply manages the role
