@@ -30,6 +30,9 @@ postgres_location = "northeurope"
 api_max_replicas = 1
 ui_max_replicas  = 1
 
+# The custom domain, bound to the UI: the API must trust tokens obtained there too.
+extra_authorized_parties = ["https://storywalker.life", "https://www.storywalker.life"]
+
 # In the subscription's billing currency, which is SEK: about $20 a month.
 monthly_budget = 200
 
