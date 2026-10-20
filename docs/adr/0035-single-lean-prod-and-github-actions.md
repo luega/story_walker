@@ -7,6 +7,9 @@
 > **Amended (2026-10-15) by [ADR-0036](0036-pull-requests-and-one-required-check.md).** Changes reach
 > `main` through pull requests; one CI workflow, `ci.yml`, runs only the component workflows a change
 > concerns, on a pull request and before a deploy.
+>
+> **Amended (2026-10-20) by [ADR-0037](0037-warm-apps-and-a-custom-domain.md).** The API and the UI
+> keep one replica running; the UI's custom domains are managed in Terraform; the budget is raised.
 
 ## Context
 
