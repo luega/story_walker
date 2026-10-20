@@ -13,7 +13,7 @@ small as the code allows. The choices behind it are in
 | `storage.tf` | Public page-image account and its `story-images` container (ADR-0010); private worker host storage |
 | `foundry.tf` | Foundry `AIServices` resource with a chat and an image deployment, keys disabled (ADR-0011) |
 | `functions.tf` | The generation worker on Flex Consumption (ADR-0020) |
-| `container_apps.tf` | Container Apps environment, the API (internal ingress) and the UI (public), pulling private images from GitHub Container Registry |
+| `container_apps.tf` | Container Apps environment, the API (internal ingress) and the UI (public), pulling private images from GitHub Container Registry; the UI's custom domains and their managed certificates |
 | `roles.tf` | Role assignments for the managed identities |
 | `budget.tf` | Monthly budget on the resource group, with e-mail alerts (ADR-0035) |
 
@@ -140,6 +140,20 @@ which creates the schema. Until then the worker's timer (ADR-0031) logs that the
 
 Clerk needs no change for the address: Terraform already puts `ui_url` in the API's
 `Clerk__AuthorizedParties`, and a Clerk development instance is not tied to a domain.
+
+## A custom domain
+
+The UI's hostnames are the keys of `ui_custom_domains` in `environments/prod.tfvars` (ADR-0037);
+each value names its Azure-managed certificate. Adding one binds it, issues its certificate and
+lets the API trust tokens obtained there. Before the deploy that adds it, create at the registrar:
+
+| Hostname | Records |
+|---|---|
+| apex (`example.com`) | `A` to the environment's static IP; `TXT asuid` = `custom_domain_verification_id` output |
+| subdomain (`www.example.com`) | `CNAME www` to the UI's Container Apps address; `TXT asuid.www` = the same id |
+
+Without them the apply fails to bind the hostname. Azure binds the certificate a few minutes after
+the apply, once it is issued.
 
 ## Still to watch
 

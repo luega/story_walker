@@ -184,8 +184,14 @@ variable "clerk_secret_key" {
   sensitive   = true
 }
 
+variable "ui_custom_domains" {
+  description = "The UI's own hostnames, each mapped to the name of its Azure-managed certificate. Each is bound to the UI and trusted by the API (ADR-0037). Its DNS records must exist before the apply that adds it."
+  type        = map(string)
+  default     = {}
+}
+
 variable "extra_authorized_parties" {
-  description = "Origins allowed to obtain tokens for the API besides the UI's own Container Apps origin, e.g. a custom domain."
+  description = "Origins allowed to obtain tokens for the API besides the UI's own origins (its Container Apps address and ui_custom_domains)."
   type        = list(string)
   default     = []
 }

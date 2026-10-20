@@ -48,6 +48,9 @@ locals {
   # the cycle of the UI needing the API's URL and the API needing the UI's origin.
   api_internal_url = "https://${local.api_name}.internal.${azurerm_container_app_environment.main.default_domain}"
   ui_origin        = "https://${local.ui_name}.${azurerm_container_app_environment.main.default_domain}"
+
+  # Every origin the UI is served from; a token obtained on any of them carries it as `azp`.
+  ui_origins = concat([local.ui_origin], [for hostname in keys(var.ui_custom_domains) : "https://${hostname}"])
 }
 
 resource "azurerm_container_app" "api" {
@@ -148,7 +151,7 @@ resource "azurerm_container_app" "api" {
 
       env {
         name  = "Clerk__AuthorizedParties"
-        value = join(",", concat([local.ui_origin], var.extra_authorized_parties))
+        value = join(",", concat(local.ui_origins, var.extra_authorized_parties))
       }
 
       env {
@@ -281,4 +284,46 @@ resource "azurerm_container_app" "ui" {
       error_message = "A ui_image in GHCR needs ghcr_username and ghcr_pull_token to pull it."
     }
   }
+}
+
+# The UI's custom domains (ADR-0037), each with an Azure-managed certificate. Azure binds the
+# certificate to the hostname once it is issued, asynchronously, hence the ignored attributes.
+resource "azurerm_container_app_custom_domain" "ui" {
+  for_each = var.ui_custom_domains
+
+  name             = each.key
+  container_app_id = azurerm_container_app.ui.id
+
+  lifecycle {
+    ignore_changes = [certificate_binding_type, container_app_environment_certificate_id]
+  }
+}
+
+resource "azurerm_container_app_environment_managed_certificate" "ui" {
+  for_each = var.ui_custom_domains
+
+  name                         = each.value
+  container_app_environment_id = azurerm_container_app_environment.main.id
+  subject_name                 = each.key
+  tags                         = local.tags
+
+  # Validation matters only until the certificate is issued; a different method must not replace
+  # a certificate in use.
+  lifecycle {
+    ignore_changes = [domain_control_validation]
+  }
+
+  depends_on = [azurerm_container_app_custom_domain.ui]
+}
+
+# storywalker.life and its certificate were bound from the portal before they were described here.
+# Once an apply has imported them, these blocks do nothing and can go.
+import {
+  to = azurerm_container_app_custom_domain.ui["storywalker.life"]
+  id = "${azurerm_container_app.ui.id}/customDomainName/storywalker.life"
+}
+
+import {
+  to = azurerm_container_app_environment_managed_certificate.ui["storywalker.life"]
+  id = "${azurerm_container_app_environment.main.id}/managedCertificates/storywalker.life-cae-stor-261020141619"
 }

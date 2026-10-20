@@ -30,8 +30,13 @@ postgres_location = "northeurope"
 api_max_replicas = 1
 ui_max_replicas  = 1
 
-# The custom domain, bound to the UI: the API must trust tokens obtained there too.
-extra_authorized_parties = ["https://storywalker.life", "https://www.storywalker.life"]
+# The custom domain (ADR-0037), DNS at Hostinger. The certificate name is the one the portal gave it.
+ui_custom_domains = {
+  "storywalker.life" = "storywalker.life-cae-stor-261020141619"
+}
+
+# www is not bound yet: trust it until it is.
+extra_authorized_parties = ["https://www.storywalker.life"]
 
 # In the subscription's billing currency, which is SEK: about $20 a month.
 monthly_budget = 200
