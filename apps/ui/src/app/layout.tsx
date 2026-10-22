@@ -3,7 +3,7 @@ import Link from "next/link";
 import { ClerkProvider, Show, UserButton } from "@clerk/nextjs";
 import { Backdrop } from "@/components/Backdrop";
 import { CookieConsent } from "@/components/CookieConsent";
-import { Fredoka, Nunito, Geist_Mono, Inter } from "next/font/google";
+import { Geist_Mono, Inter } from "next/font/google";
 import "@/style/globals.css";
 import { ThemeProvider } from "@/components/theme-provider";
 import { cn } from "@/lib/utils";
@@ -13,19 +13,6 @@ const inter = Inter({subsets:['latin'],variable:'--font-sans'});
 const fontMono = Geist_Mono({
   subsets: ["latin"],
   variable: "--font-mono",
-});
-
-
-// Two rounded faces with the same soft terminals (ADR-0033): Fredoka for titles and the story
-// itself, Nunito for the rest of the interface.
-const fredoka = Fredoka({
-  variable: "--font-fredoka",
-  subsets: ["latin"],
-});
-
-const nunito = Nunito({
-  variable: "--font-nunito",
-  subsets: ["latin"],
 });
 
 const WORDMARK = "font-display text-xl font-semibold tracking-tight text-accent sm:text-2xl";
@@ -45,7 +32,7 @@ const CLERK_APPEARANCE = {
     colorInput: "var(--background)",
     colorInputForeground: "var(--foreground)",
     colorBorder: "var(--border)",
-    fontFamily: "var(--font-nunito)",
+    fontFamily: "var(--font-sans)",
     borderRadius: "1rem",
   },
 };
@@ -62,7 +49,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
       // next-themes sets the theme class on <html> before React hydrates, which React would
       // otherwise report as a mismatch.
       suppressHydrationWarning
-      className={cn("h-full", "antialiased", fredoka.variable, nunito.variable, fontMono.variable, "font-sans", inter.variable)}
+      className={cn("h-full", "antialiased", fontMono.variable, "font-sans", inter.variable)}
     >
       <body className="isolate flex min-h-full flex-col font-sans">
         <ThemeProvider>
