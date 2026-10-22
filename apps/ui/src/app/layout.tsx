@@ -1,41 +1,18 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { ClerkProvider, Show, UserButton } from "@clerk/nextjs";
-import { Backdrop } from "@/components/Backdrop";
-import { CookieConsent } from "@/components/CookieConsent";
 import { Geist_Mono, Inter } from "next/font/google";
 import "@/style/globals.css";
+import { ClerkProvider, Show, UserButton } from "@clerk/nextjs";
+import { shadcn } from "@clerk/themes";
 import { ThemeProvider } from "@/components/theme-provider";
 import { cn } from "@/lib/utils";
+import { Backdrop } from "@/components/Backdrop";
+import { CookieConsent } from "@/components/CookieConsent";
 
-const inter = Inter({subsets:['latin'],variable:'--font-sans'});
-
-const fontMono = Geist_Mono({
-  subsets: ["latin"],
-  variable: "--font-mono",
-});
-
+const inter = Inter({subsets:["latin"], variable: "--font-sans"});
+const fontMono = Geist_Mono({subsets: ["latin"], variable: "--font-mono"});
 const WORDMARK = "font-display text-xl font-semibold tracking-tight text-accent sm:text-2xl";
-const NAV_LINK =
-  "rounded-full px-3 py-2 text-sm font-bold transition hover:bg-lilac-soft hover:text-accent";
-
-// Clerk's sign-in, sign-up and user menu in the site's own colours, type and corners. The values
-// are the CSS variables themselves, so the night palette carries over without a second theme.
-const CLERK_APPEARANCE = {
-  variables: {
-    colorPrimary: "var(--accent)",
-    colorPrimaryForeground: "var(--accent-foreground)",
-    colorDanger: "var(--danger)",
-    colorForeground: "var(--foreground)",
-    colorMutedForeground: "var(--muted)",
-    colorBackground: "var(--surface)",
-    colorInput: "var(--background)",
-    colorInputForeground: "var(--foreground)",
-    colorBorder: "var(--border)",
-    fontFamily: "var(--font-sans)",
-    borderRadius: "1rem",
-  },
-};
+const NAV_LINK = "rounded-full px-3 py-2 text-sm font-bold transition hover:bg-lilac-soft hover:text-accent";
 
 export const metadata: Metadata = {
   title: "Story Walker",
@@ -46,8 +23,6 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
     <html
       lang="en"
-      // next-themes sets the theme class on <html> before React hydrates, which React would
-      // otherwise report as a mismatch.
       suppressHydrationWarning
       className={cn("h-full", "antialiased", fontMono.variable, "font-sans", inter.variable)}
     >
@@ -55,7 +30,9 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
         <ThemeProvider>
           <Backdrop />
           {/* Clerk Core 3 wants the provider inside <body>, not wrapping <html>. */}
-          <ClerkProvider appearance={CLERK_APPEARANCE}>
+          {/* Clerk's own shadcn theme: its forms and user menu read the shadcn variables in
+              globals.css, so they follow the theme, light and dark, with nothing to keep in step. */}
+          <ClerkProvider appearance={{ theme: shadcn }}>
             <header className="px-4 pt-4 sm:px-6">
               {/* A floating pill rather than a ruled bar: the site's first rounded shape. */}
               <div className="mx-auto flex max-w-6xl items-center justify-between gap-3 rounded-full border-2 border-border bg-surface px-4 shadow-soft py-2.5 sm:px-6">
