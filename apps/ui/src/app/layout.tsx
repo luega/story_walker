@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { Geist_Mono, Inter } from "next/font/google";
+import { Inter } from "next/font/google";
 import "@/style/globals.css";
 import { ClerkProvider, Show, UserButton } from "@clerk/nextjs";
 import { shadcn } from "@clerk/themes";
@@ -9,10 +9,9 @@ import { cn } from "@/lib/utils";
 import { Backdrop } from "@/components/Backdrop";
 import { CookieConsent } from "@/components/CookieConsent";
 
-const inter = Inter({subsets:["latin"], variable: "--font-sans"});
-const fontMono = Geist_Mono({subsets: ["latin"], variable: "--font-mono"});
-const WORDMARK = "font-display text-xl font-semibold tracking-tight text-accent sm:text-2xl";
-const NAV_LINK = "rounded-full px-3 py-2 text-sm font-bold transition hover:bg-lilac-soft hover:text-accent";
+const fontSans = Inter({subsets:["latin"], variable: "--font-sans"});
+const WORDMARK = "font-display text-3xl font-semibold tracking-tight text-accent sm:text-2xl";
+const NAV_LINK = "rounded-full text-3xl px-3 py-2 text-sm font-bold transition hover:bg-lilac-soft hover:text-accent";
 
 export const metadata: Metadata = {
   title: "Story Walker",
@@ -24,7 +23,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
     <html
       lang="en"
       suppressHydrationWarning
-      className={cn("h-full", "antialiased", fontMono.variable, "font-sans", inter.variable)}
+      className={cn("h-full", "antialiased", "font-sans", fontSans.variable)}
     >
       <body className="isolate flex min-h-full flex-col font-sans">
         <ThemeProvider>
